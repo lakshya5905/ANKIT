@@ -8,6 +8,7 @@ import {
   User as FirebaseUser,
 } from 'firebase/auth';
 import { auth } from '../lib/firebase';
+import { SDK_VERSION } from 'firebase/app';
 import { LoginCredentials, User } from '../types/auth';
 
 export interface IAuthService {
@@ -55,6 +56,12 @@ class FirebaseAuthService implements IAuthService {
 
       return user;
     } catch (err: any) {
+      // Diagnostic logging (do NOT log password)
+      console.debug('Firebase Auth error object:', err);
+      console.debug('Error code:', err.code, 'Message:', err.message, 'Custom data:', (err as any).customData);
+      console.debug('Firebase config - projectId:', auth.app?.options?.projectId);
+      console.debug('Firebase config - authDomain:', auth.app?.options?.authDomain);
+      console.debug('Firebase SDK version:', SDK_VERSION);
       const code = err.code || '';
       if (
         code === 'auth/invalid-credential' ||

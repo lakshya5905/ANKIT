@@ -1,0 +1,6 @@
+{
+  "name": "Fauji Properties",
+  "description": "Trusted property guidance for homes, plots, and investments in Ambala and beyond.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

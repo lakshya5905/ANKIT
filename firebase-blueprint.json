@@ -1,0 +1,277 @@
+{
+  "entities": {
+    "Property": {
+      "title": "Property",
+      "description": "Real estate property listing in Ambala and surrounding areas",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "Title of the property",
+          "maxLength": 200
+        },
+        "slug": {
+          "type": "string",
+          "description": "URL-friendly unique slug for the property",
+          "maxLength": 250
+        },
+        "description": {
+          "type": "string",
+          "description": "Full description of property features and amenities",
+          "maxLength": 3000
+        },
+        "propertyType": {
+          "type": "string",
+          "description": "Classification of the property",
+          "enum": [
+            "Residential Plot",
+            "Commercial Plot",
+            "Built-up House",
+            "Agricultural Land",
+            "Villa / Kothi"
+          ]
+        },
+        "price": {
+          "type": "number",
+          "description": "Price in INR"
+        },
+        "priceDisplay": {
+          "type": "string",
+          "description": "Formatted price string e.g. ₹68 Lakhs",
+          "maxLength": 50
+        },
+        "pricePerSqFt": {
+          "type": "number",
+          "description": "Rate per square foot in INR"
+        },
+        "location": {
+          "type": "string",
+          "description": "Neighborhood or sector location in Ambala",
+          "maxLength": 150
+        },
+        "city": {
+          "type": "string",
+          "description": "City of property",
+          "maxLength": 100
+        },
+        "state": {
+          "type": "string",
+          "description": "State e.g. Haryana",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "description": "Availability status",
+          "enum": ["Available", "Under Offer", "Sold"]
+        },
+        "featured": {
+          "type": "boolean",
+          "description": "Whether this property is spotlighted on the homepage"
+        },
+        "dimensions": {
+          "type": "string",
+          "description": "Plot or structure dimensions e.g. 30 x 60 ft",
+          "maxLength": 100
+        },
+        "areaSqFt": {
+          "type": "number",
+          "description": "Total plot or built-up area in square feet"
+        },
+        "areaDisplay": {
+          "type": "string",
+          "description": "Formatted area representation e.g. 1800 sq.ft (200 sq.yd)",
+          "maxLength": 100
+        },
+        "facing": {
+          "type": "string",
+          "description": "Facing orientation",
+          "enum": ["North", "East", "North-East", "West", "South"]
+        },
+        "bedrooms": {
+          "type": "number",
+          "description": "Number of bedrooms if built-up"
+        },
+        "bathrooms": {
+          "type": "number",
+          "description": "Number of bathrooms if built-up"
+        },
+        "parking": {
+          "type": "number",
+          "description": "Number of parking spaces"
+        },
+        "amenities": {
+          "type": "array",
+          "description": "List of key property features"
+        },
+        "images": {
+          "type": "array",
+          "description": "List of property image URLs"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of creation"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "ISO timestamp of last update"
+        }
+      },
+      "required": [
+        "title",
+        "slug",
+        "description",
+        "propertyType",
+        "price",
+        "priceDisplay",
+        "location",
+        "city",
+        "state",
+        "status",
+        "dimensions",
+        "areaSqFt",
+        "areaDisplay",
+        "facing",
+        "images"
+      ]
+    },
+    "Enquiry": {
+      "title": "Enquiry",
+      "description": "Lead or property enquiry submitted by website visitors",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Full name of the inquirer",
+          "maxLength": 120
+        },
+        "phone": {
+          "type": "string",
+          "description": "Contact phone number",
+          "maxLength": 25
+        },
+        "email": {
+          "type": "string",
+          "description": "Optional email address",
+          "maxLength": 150
+        },
+        "message": {
+          "type": "string",
+          "description": "Visitor message or specific property requirement",
+          "maxLength": 2000
+        },
+        "propertyId": {
+          "type": "string",
+          "description": "Associated property identifier if enquiry from property detail",
+          "maxLength": 100
+        },
+        "propertyTitle": {
+          "type": "string",
+          "description": "Title of associated property",
+          "maxLength": 200
+        },
+        "source": {
+          "type": "string",
+          "description": "Origin of enquiry",
+          "maxLength": 100
+        },
+        "status": {
+          "type": "string",
+          "description": "Lead processing status",
+          "enum": ["New", "Contacted", "Closed"]
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "ISO timestamp of submission"
+        }
+      },
+      "required": ["name", "phone", "message", "status", "createdAt"]
+    },
+    "Settings": {
+      "title": "Settings",
+      "description": "Website business profile and contact information",
+      "type": "object",
+      "properties": {
+        "businessName": {
+          "type": "string",
+          "description": "Business title",
+          "maxLength": 150
+        },
+        "tagline": {
+          "type": "string",
+          "description": "Business tagline",
+          "maxLength": 200
+        },
+        "phone": {
+          "type": "string",
+          "description": "Primary contact number",
+          "maxLength": 30
+        },
+        "whatsapp": {
+          "type": "string",
+          "description": "Primary WhatsApp number",
+          "maxLength": 30
+        },
+        "email": {
+          "type": "string",
+          "description": "Official business email",
+          "maxLength": 150
+        },
+        "address": {
+          "type": "string",
+          "description": "Physical office address",
+          "maxLength": 300
+        },
+        "city": {
+          "type": "string",
+          "description": "City",
+          "maxLength": 100
+        },
+        "state": {
+          "type": "string",
+          "description": "State",
+          "maxLength": 100
+        },
+        "country": {
+          "type": "string",
+          "description": "Country",
+          "maxLength": 100
+        },
+        "businessHours": {
+          "type": "string",
+          "description": "Operating office hours",
+          "maxLength": 100
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp of last settings change"
+        }
+      },
+      "required": [
+        "businessName",
+        "tagline",
+        "phone",
+        "whatsapp",
+        "email",
+        "address",
+        "city",
+        "state",
+        "country",
+        "businessHours"
+      ]
+    }
+  },
+  "firestore": {
+    "/properties/{propertyId}": {
+      "schema": "Property",
+      "description": "Public property listings in Ambala and surrounding areas"
+    },
+    "/enquiries/{enquiryId}": {
+      "schema": "Enquiry",
+      "description": "Customer enquiries and lead capture records"
+    },
+    "/settings/{settingsId}": {
+      "schema": "Settings",
+      "description": "Global business configuration and contact settings"
+    }
+  }
+}

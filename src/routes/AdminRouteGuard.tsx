@@ -7,14 +7,15 @@ interface AdminRouteGuardProps {
 }
 
 export const AdminRouteGuard: React.FC<AdminRouteGuardProps> = ({ children }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { user, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
+  const adminEmail = import.meta.env.VITE_ADMIN_EMAIL;
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
+    if (!isLoading && (!isAuthenticated || user?.email !== adminEmail)) {
       navigate('/admin/login');
     }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, isLoading, user, adminEmail, navigate]);
 
   if (isLoading) {
     return (

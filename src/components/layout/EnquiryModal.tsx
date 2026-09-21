@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useUI } from '../../hooks/useUI';
 import { enquiryService } from '../../services/enquiryService';
+import { formspreeService } from '../../services/formspreeService';
 import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { validatePhone, validateEmail } from '../../utils/validation';
@@ -88,7 +89,7 @@ export const EnquiryModal: React.FC = () => {
     setErrors({});
 
     try {
-      await enquiryService.submitEnquiry({
+      const payload = {
         name,
         phone,
         email,
@@ -96,7 +97,14 @@ export const EnquiryModal: React.FC = () => {
         propertyId: enquiryModalProperty?.id,
         propertyTitle: enquiryModalProperty?.title,
         source: enquiryModalProperty ? 'property_detail' : 'homepage_contact'
-      });
+      };
+      await enquiryService.submitEnquiry(payload);
+      // Send to Formspree; ignore errors to avoid rolling back Firestore write
+      try {
+        await formspreeService.sendEnquiry(payload);
+      } catch (fsErr) {
+        console.error('Formspree submission failed:', fsErr);
+      }
 
       setIsSuccess(true);
       showToast('Enquiry received! Our team will contact you shortly.', 'success');

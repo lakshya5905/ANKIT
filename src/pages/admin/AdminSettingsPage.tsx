@@ -4,12 +4,14 @@ import { settingsService } from '../../services/settingsService';
 import { INITIAL_BUSINESS_SETTINGS } from '../../data/mockSettings';
 import { BusinessSettings } from '../../types/settings';
 import { useUI } from '../../hooks/useUI';
+import { useSettings } from '../../hooks/useSettings';
 import { Button } from '../../components/common/Button';
 import { Input } from '../../components/common/Input';
 import { Save, ShieldCheck, Building2, Phone } from 'lucide-react';
 
 export const AdminSettingsPage: React.FC = () => {
   const { showToast } = useUI();
+  const { refreshSettings } = useSettings();
   const [settings, setSettings] = useState<BusinessSettings>(INITIAL_BUSINESS_SETTINGS);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,6 +41,7 @@ export const AdminSettingsPage: React.FC = () => {
     setIsSaving(true);
     try {
       await settingsService.updateSettings(settings);
+      await refreshSettings();
       showToast('Settings saved successfully', 'success');
     } catch (err: any) {
       showToast(err.message || 'Failed to save settings', 'error');

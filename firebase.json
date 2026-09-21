@@ -1,0 +1,8 @@
+{
+  "firestore": {
+    "databaseId": "ai-studio-faujiproperties-b28b8452-7a95-4284-8737-b7a2c403d1ca",
+    "rules": "firestore.rules",
+    "edition": "ENTERPRISE",
+    "dataAccessMode": "FIRESTORE_NATIVE"
+  }
+}

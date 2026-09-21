@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from '../../routes/router';
 import { Mail, MapPin, Clock, ArrowUpRight, Lock } from 'lucide-react';
+import { useSettings } from '../../hooks/useSettings';
 
 export const Footer: React.FC = () => {
+  const { settings } = useSettings();
+
   return (
     <footer className="bg-[#0b2b2e] text-stone-200 border-t border-teal-950 relative overflow-hidden">
       {/* Subtle background glow effect */}
@@ -21,11 +24,11 @@ export const Footer: React.FC = () => {
                 referrerPolicy="no-referrer"
               />
               <span className="text-xl font-bold tracking-tight text-white">
-                Fauji Properties
+                {settings.businessName || 'Fauji Properties'}
               </span>
             </Link>
             <p className="text-sm text-stone-300/80 leading-relaxed max-w-sm">
-              Trusted property guidance for homes, plots, and investments in Ambala and beyond.
+              {settings.tagline || 'Trusted property guidance for homes, plots, and investments in Ambala and beyond.'}
             </p>
             <div className="pt-2">
               <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-teal-900/40 border border-teal-800/60 text-xs text-emerald-300 font-medium">
@@ -43,15 +46,15 @@ export const Footer: React.FC = () => {
             <div className="flex items-start gap-2.5 text-sm text-stone-200">
               <Mail className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
               <a
-                href="mailto:ajitsingh5624@gmail.com"
+                href={`mailto:${settings.email || 'ajitsingh5624@gmail.com'}`}
                 className="hover:text-emerald-300 transition-colors"
               >
-                ajitsingh5624@gmail.com
+                {settings.email || 'ajitsingh5624@gmail.com'}
               </a>
             </div>
             <div className="flex items-start gap-2.5 text-sm text-stone-200">
               <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <span>Jaggi Garden, Ambala, Haryana, India</span>
+              <span>{settings.address ? `${settings.address}, ${settings.city}, ${settings.state}, ${settings.country}` : 'Jaggi Garden, Ambala, Haryana, India'}</span>
             </div>
             <div className="pt-2">
               <Link
@@ -71,7 +74,7 @@ export const Footer: React.FC = () => {
             </h4>
             <div className="flex items-center gap-2.5 text-sm text-stone-200">
               <Clock className="w-4 h-4 text-emerald-400 shrink-0" />
-              <span>All Days (9:00 AM to 8:00 PM)</span>
+              <span>{settings.businessHours || 'All Days (9:00 AM to 8:00 PM)'}</span>
             </div>
 
             <div className="pt-4 flex flex-col gap-2.5">

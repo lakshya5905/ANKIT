@@ -1,10 +1,12 @@
 import React from 'react';
 import { Phone, MessageCircle, Mail, MapPin, Clock, ShieldCheck } from 'lucide-react';
+import { useSettings } from '../../hooks/useSettings';
 
 export const ContactInfoCard: React.FC = () => {
+  const { settings } = useSettings();
   const whatsappUrl =
-    'https://wa.me/919896056240?text=' +
-    encodeURIComponent('Hello Fauji Properties, I would like to enquire about properties in Ambala.');
+    `https://wa.me/${settings.whatsapp || '919896056240'}?text=` +
+    encodeURIComponent(`Hello ${settings.businessName || 'Fauji Properties'}, I would like to enquire about properties in Ambala.`);
 
   return (
     <div className="bg-white rounded-3xl p-6 sm:p-8 border border-stone-200/90 shadow-sm text-left flex flex-col gap-6">
@@ -25,10 +27,10 @@ export const ContactInfoCard: React.FC = () => {
               Call our team
             </span>
             <a
-              href="tel:+919896056240"
+              href={`tel:${settings.phone || '+919896056240'}`}
               className="text-base font-bold text-slate-900 hover:text-[#0f383c] transition-colors"
             >
-              +91 98960 56240
+              {settings.phone || '+91 98960 56240'}
             </a>
             <p className="text-xs text-slate-500 mt-0.5">Direct phone line for buyer & seller enquiries</p>
           </div>
@@ -65,10 +67,10 @@ export const ContactInfoCard: React.FC = () => {
               Email Address
             </span>
             <a
-              href="mailto:ajitsingh5624@gmail.com"
+              href={`mailto:${settings.email || 'ajitsingh5624@gmail.com'}`}
               className="text-base font-bold text-slate-900 hover:text-[#0f383c] transition-colors break-all"
             >
-              ajitsingh5624@gmail.com
+              {settings.email || 'ajitsingh5624@gmail.com'}
             </a>
             <p className="text-xs text-slate-500 mt-0.5">Property documents & official correspondence</p>
           </div>
@@ -84,7 +86,7 @@ export const ContactInfoCard: React.FC = () => {
               Physical Office
             </span>
             <p className="text-base font-bold text-slate-900">
-              Jaggi Garden, Ambala, Haryana, India
+              {settings.address ? `${settings.address}, ${settings.city}, ${settings.state}, ${settings.country}` : 'Jaggi Garden, Ambala, Haryana, India'}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">Easily accessible from Ambala Cantt & City</p>
           </div>
@@ -100,7 +102,7 @@ export const ContactInfoCard: React.FC = () => {
               Hours
             </span>
             <p className="text-sm font-bold text-slate-900">
-              Monday to Saturday, 9:00 AM to 7:00 PM
+              {settings.businessHours || 'Monday to Saturday, 9:00 AM to 7:00 PM'}
             </p>
             <p className="text-xs text-slate-500 mt-0.5">Sunday by prior appointment for site visits</p>
           </div>

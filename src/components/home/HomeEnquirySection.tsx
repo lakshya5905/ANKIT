@@ -5,9 +5,11 @@ import { Button } from '../common/Button';
 import { Input } from '../common/Input';
 import { validatePhone, validateEmail } from '../../utils/validation';
 import { CheckCircle2, MessageSquare, Phone, MapPin } from 'lucide-react';
+import { useSettings } from '../../hooks/useSettings';
 
 export const HomeEnquirySection: React.FC = () => {
   const { showToast } = useUI();
+  const { settings } = useSettings();
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -93,7 +95,7 @@ export const HomeEnquirySection: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Direct Call</div>
-                  <div className="text-sm font-bold text-slate-900">+91 98960 56240</div>
+                  <div className="text-sm font-bold text-slate-900">{settings.phone || '+91 98960 56240'}</div>
                 </div>
               </div>
 
@@ -103,7 +105,7 @@ export const HomeEnquirySection: React.FC = () => {
                 </div>
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Office Location</div>
-                  <div className="text-sm font-bold text-slate-900">Jaggi Garden, Ambala</div>
+                  <div className="text-sm font-bold text-slate-900">{settings.address ? `${settings.address}, ${settings.city}` : 'Jaggi Garden, Ambala'}</div>
                 </div>
               </div>
             </div>

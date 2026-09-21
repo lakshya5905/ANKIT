@@ -158,17 +158,6 @@ export const AdminLoginPage: React.FC = () => {
               </Button>
             </div>
           </form>
-
-          {/* Quick Credential Hint for Evaluator */}
-          <div className="mt-6 pt-5 border-t border-stone-100 text-left">
-            <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
-              Default Testing Credentials:
-            </p>
-            <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-xs font-mono text-slate-700 flex flex-col gap-0.5">
-              <div>Email: <span className="font-bold text-[#0f383c]">admin@fauji.com</span></div>
-              <div>Password: <span className="font-bold text-[#0f383c]">admin123</span></div>
-            </div>
-          </div>
         </div>
 
       </div>

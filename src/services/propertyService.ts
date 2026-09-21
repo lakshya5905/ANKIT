@@ -7,6 +7,8 @@ import {
   updateDoc,
   deleteDoc,
   writeBatch,
+  query,
+  where,
 } from 'firebase/firestore';
 import { db, auth, handleFirestoreError, OperationType } from '../lib/firebase';
 import { INITIAL_MOCK_PROPERTIES } from '../data/mockProperties';
@@ -66,9 +68,6 @@ class FirestorePropertyService implements IPropertyService {
         snapshot.forEach((d) => {
           list.push({ id: d.id, ...d.data() } as Property);
         });
-      } else {
-        // Fallback for public preview if Firestore was just provisioned and unseeded
-        list = [...INITIAL_MOCK_PROPERTIES];
       }
 
       if (!filters) {
@@ -170,9 +169,7 @@ class FirestorePropertyService implements IPropertyService {
         return { id: snap.id, ...snap.data() } as Property;
       }
 
-      // Check fallback mock data for seamless experience
-      const foundMock = INITIAL_MOCK_PROPERTIES.find((p) => p.id === id);
-      return foundMock ? { ...foundMock } : null;
+      return null;
     } catch (error) {
       handleFirestoreError(error, OperationType.GET, docPath);
     }
@@ -180,9 +177,14 @@ class FirestorePropertyService implements IPropertyService {
 
   async getPropertyBySlug(slug: string): Promise<Property | null> {
     try {
-      const all = await this.getProperties();
-      const found = all.find((p) => p.slug === slug);
-      return found ? { ...found } : null;
+      const collRef = collection(db, this.collectionName);
+      const q = query(collRef, where('slug', '==', slug));
+      const snapshot = await getDocs(q);
+      if (!snapshot.empty) {
+        const docSnap = snapshot.docs[0];
+        return { id: docSnap.id, ...docSnap.data() } as Property;
+      }
+      return null;
     } catch (error) {
       handleFirestoreError(error, OperationType.GET, `${this.collectionName}?slug=${slug}`);
     }
@@ -190,8 +192,14 @@ class FirestorePropertyService implements IPropertyService {
 
   async getFeaturedProperties(): Promise<Property[]> {
     try {
-      const all = await this.getProperties();
-      return all.filter((p) => p.featured);
+      const collRef = collection(db, this.collectionName);
+      const q = query(collRef, where('featured', '==', true));
+      const snapshot = await getDocs(q);
+      const list: Property[] = [];
+      snapshot.forEach((d) => {
+        list.push({ id: d.id, ...d.data() } as Property);
+      });
+      return list;
     } catch (error) {
       handleFirestoreError(error, OperationType.LIST, `${this.collectionName}/featured`);
     }

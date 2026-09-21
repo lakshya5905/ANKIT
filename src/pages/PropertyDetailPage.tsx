@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useRouteParams, Link, useNavigate } from '../routes/router';
 import { useProperties } from '../hooks/useProperties';
+import { useSettings } from '../hooks/useSettings';
 import { useCompare } from '../hooks/useCompare';
 import { useUI } from '../hooks/useUI';
 import { Property } from '../types/property';
@@ -27,6 +28,7 @@ export const PropertyDetailPage: React.FC = () => {
   const { id } = useRouteParams();
   const navigate = useNavigate();
   const { properties, getPropertyById } = useProperties();
+  const { settings } = useSettings();
   const { addToCompare, removeFromCompare, isInCompare, canAddMore } = useCompare();
   const { openEnquiryModal, showToast } = useUI();
 
@@ -47,7 +49,7 @@ export const PropertyDetailPage: React.FC = () => {
     return () => {
       isMounted = false;
     };
-  }, [id, properties, getPropertyById]);
+  }, [id, getPropertyById]);
 
   if (isLoading) {
     return (
@@ -101,9 +103,9 @@ export const PropertyDetailPage: React.FC = () => {
   };
 
   const whatsappMessage = encodeURIComponent(
-    `Hello Ajit Singh / Fauji Properties, I am interested in "${property.title}" (Ref: ${property.id}). Please share site visit schedule.`
+    `Hello ${settings.businessName || 'Fauji Properties'}, I am interested in "${property.title}" (Ref: ${property.id}). Please share site visit schedule.`
   );
-  const whatsappUrl = `https://wa.me/919896056240?text=${whatsappMessage}`;
+  const whatsappUrl = `https://wa.me/${settings.whatsapp || '919896056240'}?text=${whatsappMessage}`;
 
   const similarProperties = properties
     .filter((p: Property) => p.id !== property.id && (p.propertyType === property.propertyType || p.city === property.city))
@@ -258,11 +260,11 @@ export const PropertyDetailPage: React.FC = () => {
                 </a>
 
                 <a
-                  href="tel:+919896056240"
+                  href={`tel:${settings.phone || '+919896056240'}`}
                   className="inline-flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-700 bg-stone-100 hover:bg-stone-200 transition-colors"
                 >
                   <Phone className="w-3.5 h-3.5 text-slate-600" />
-                  <span>Direct Call (+91 98960 56240)</span>
+                  <span>Direct Call ({settings.phone || '+91 98960 56240'})</span>
                 </a>
               </div>
             </div>
@@ -273,7 +275,7 @@ export const PropertyDetailPage: React.FC = () => {
                 Office Location
               </h4>
               <p className="text-xs text-slate-700 leading-snug">
-                Jaggi Garden, Ambala, Haryana, India. Open all 7 days for accompanied property tours.
+                {settings.address ? `${settings.address}, ${settings.city}, ${settings.state}, ${settings.country}` : 'Jaggi Garden, Ambala, Haryana, India'}. Open all 7 days for accompanied property tours.
               </p>
             </div>
           </div>

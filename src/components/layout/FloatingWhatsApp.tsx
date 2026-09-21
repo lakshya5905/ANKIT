@@ -1,10 +1,12 @@
 import React from 'react';
 import { MessageCircle } from 'lucide-react';
+import { useSettings } from '../../hooks/useSettings';
 
 export const FloatingWhatsApp: React.FC = () => {
-  const whatsappNumber = '919896056240';
+  const { settings } = useSettings();
+  const whatsappNumber = settings.whatsapp || '919896056240';
   const defaultMessage = encodeURIComponent(
-    'Hello Fauji Properties, I am looking for property options in Jaggi Garden / Ambala. Please share details.'
+    `Hello ${settings.businessName || 'Fauji Properties'}, I am looking for property options in Jaggi Garden / Ambala. Please share details.`
   );
 
   const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${defaultMessage}`;

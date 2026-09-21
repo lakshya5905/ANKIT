@@ -20,16 +20,18 @@ import {
 } from 'lucide-react';
 
 export const AdminDashboardPage: React.FC = () => {
-  const { properties } = useProperties();
+  const { properties, refreshProperties } = useProperties();
   const navigate = useNavigate();
   const [enquiries, setEnquiries] = useState<Enquiry[]>([]);
 
   useEffect(() => {
-    propertyService.seedInitialDataIfEmpty().catch(() => {});
+    propertyService.seedInitialDataIfEmpty()
+      .then(() => refreshProperties())
+      .catch(() => {});
     enquiryService.getEnquiries().then(setEnquiries).catch((err) => {
       console.error('Failed to load enquiries:', err);
     });
-  }, []);
+  }, [refreshProperties]);
 
   const totalCount = properties.length;
   const availableCount = properties.filter((p) => p.status === 'Available').length;

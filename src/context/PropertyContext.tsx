@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback, useMemo } from 'react';
 import { propertyService } from '../services/propertyService';
 import { Property, PropertyFilterCriteria } from '../types/property';
 
@@ -28,11 +28,94 @@ const defaultFilters: PropertyFilterCriteria = {
   sortBy: 'newest'
 };
 
+function applyPropertyFilters(properties: Property[], filters: PropertyFilterCriteria): Property[] {
+  let list = [...properties];
+
+  if (filters.searchQuery) {
+    const q = filters.searchQuery.toLowerCase().trim();
+    list = list.filter(
+      (p) =>
+        p.title.toLowerCase().includes(q) ||
+        p.location.toLowerCase().includes(q) ||
+        p.city.toLowerCase().includes(q) ||
+        p.description.toLowerCase().includes(q) ||
+        p.propertyType.toLowerCase().includes(q)
+    );
+  }
+
+  if (filters.location && filters.location !== 'All' && filters.location.trim() !== '') {
+    const loc = filters.location.toLowerCase().trim();
+    list = list.filter(
+      (p) =>
+        p.location.toLowerCase().includes(loc) ||
+        p.city.toLowerCase().includes(loc)
+    );
+  }
+
+  if (filters.propertyType && (filters.propertyType as string) !== 'Any type' && (filters.propertyType as string) !== '') {
+    list = list.filter((p) => p.propertyType === filters.propertyType);
+  }
+
+  if (filters.status && (filters.status as string) !== 'All' && (filters.status as string) !== '') {
+    list = list.filter((p) => p.status === filters.status);
+  }
+
+  if (filters.minPrice !== undefined && filters.minPrice > 0) {
+    list = list.filter((p) => p.price >= (filters.minPrice ?? 0));
+  }
+
+  if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
+    list = list.filter((p) => p.price <= (filters.maxPrice ?? Infinity));
+  }
+
+  if (filters.budgetRange && filters.budgetRange !== 'Any budget') {
+    if (filters.budgetRange === 'under-50l') {
+      list = list.filter((p) => p.price < 5000000);
+    } else if (filters.budgetRange === '50l-1cr') {
+      list = list.filter((p) => p.price >= 5000000 && p.price <= 10000000);
+    } else if (filters.budgetRange === 'above-1cr') {
+      list = list.filter((p) => p.price > 10000000);
+    }
+  }
+
+  if (filters.minBedrooms && filters.minBedrooms > 0) {
+    list = list.filter((p) => (p.bedrooms ?? 0) >= (filters.minBedrooms ?? 0));
+  }
+
+  if (filters.facing && (filters.facing as string) !== 'Any' && (filters.facing as string) !== '') {
+    list = list.filter((p) => p.facing === filters.facing);
+  }
+
+  if (filters.sortBy) {
+    switch (filters.sortBy) {
+      case 'price-asc':
+        list.sort((a, b) => a.price - b.price);
+        break;
+      case 'price-desc':
+        list.sort((a, b) => b.price - a.price);
+        break;
+      case 'area-asc':
+        list.sort((a, b) => a.areaSqFt - b.areaSqFt);
+        break;
+      case 'area-desc':
+        list.sort((a, b) => b.areaSqFt - a.areaSqFt);
+        break;
+      case 'newest':
+      default:
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        break;
+    }
+  } else {
+    list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  }
+
+  return list;
+}
+
 const PropertyContext = createContext<PropertyContextValue | undefined>(undefined);
 
 export const PropertyProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [allProperties, setAllProperties] = useState<Property[]>([]);
-  const [filteredProperties, setFilteredProperties] = useState<Property[]>([]);
   const [featuredProperties, setFeaturedProperties] = useState<Property[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState<PropertyFilterCriteria>(defaultFilters);
@@ -40,66 +123,68 @@ export const PropertyProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const fetchProperties = useCallback(async () => {
     setIsLoading(true);
     try {
-      const [allList, filteredList, featList] = await Promise.all([
+      const [allList, featList] = await Promise.all([
         propertyService.getProperties(),
-        propertyService.getProperties(filters),
         propertyService.getFeaturedProperties()
       ]);
-      setAllProperties(allList);
-      setFilteredProperties(filteredList);
-      setFeaturedProperties(featList);
+      setAllProperties(allList || []);
+      setFeaturedProperties(featList || []);
     } catch (err) {
       console.error('Failed to load properties', err);
     } finally {
       setIsLoading(false);
     }
-  }, [filters]);
+  }, []);
 
   useEffect(() => {
     fetchProperties();
   }, [fetchProperties]);
 
-  const updateFilter = <K extends keyof PropertyFilterCriteria>(key: K, value: PropertyFilterCriteria[K]) => {
+  const filteredProperties = useMemo(() => {
+    return applyPropertyFilters(allProperties, filters);
+  }, [allProperties, filters]);
+
+  const updateFilter = useCallback(<K extends keyof PropertyFilterCriteria>(key: K, value: PropertyFilterCriteria[K]) => {
     setFilters((prev) => ({
       ...prev,
       [key]: value
     }));
-  };
+  }, []);
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setFilters(defaultFilters);
-  };
+  }, []);
 
-  const refreshProperties = async () => {
+  const refreshProperties = useCallback(async () => {
     await fetchProperties();
-  };
+  }, [fetchProperties]);
 
-  const getPropertyById = async (id: string): Promise<Property | null> => {
+  const getPropertyById = useCallback(async (id: string): Promise<Property | null> => {
     // Check in-memory cache first
     const cached = allProperties.find((p) => p.id === id);
     if (cached) return cached;
     return await propertyService.getPropertyById(id);
-  };
+  }, [allProperties]);
 
-  const createProperty = async (data: Omit<Property, 'id' | 'slug' | 'createdAt' | 'updatedAt'>): Promise<Property> => {
+  const createProperty = useCallback(async (data: Omit<Property, 'id' | 'slug' | 'createdAt' | 'updatedAt'>): Promise<Property> => {
     const created = await propertyService.createProperty(data);
     await fetchProperties();
     return created;
-  };
+  }, [fetchProperties]);
 
-  const updateProperty = async (id: string, data: Partial<Property>): Promise<Property> => {
+  const updateProperty = useCallback(async (id: string, data: Partial<Property>): Promise<Property> => {
     const updated = await propertyService.updateProperty(id, data);
     await fetchProperties();
     return updated;
-  };
+  }, [fetchProperties]);
 
-  const deleteProperty = async (id: string): Promise<boolean> => {
+  const deleteProperty = useCallback(async (id: string): Promise<boolean> => {
     const success = await propertyService.deleteProperty(id);
     if (success) {
       await fetchProperties();
     }
     return success;
-  };
+  }, [fetchProperties]);
 
   return (
     <PropertyContext.Provider

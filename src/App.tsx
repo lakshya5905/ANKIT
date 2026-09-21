@@ -1,6 +1,7 @@
 import React from 'react';
 import { RouterProvider, useLocation, matchRoute, RouteParamsProvider, Link } from './routes/router';
 import { AuthProvider } from './context/AuthContext';
+import { SettingsProvider } from './context/SettingsContext';
 import { PropertyProvider } from './context/PropertyContext';
 import { CompareProvider } from './context/CompareContext';
 import { UIProvider } from './context/UIContext';
@@ -161,13 +162,15 @@ export default function App() {
   return (
     <RouterProvider>
       <AuthProvider>
-        <PropertyProvider>
-          <CompareProvider>
-            <UIProvider>
-              <AppContent />
-            </UIProvider>
-          </CompareProvider>
-        </PropertyProvider>
+        <SettingsProvider>
+          <PropertyProvider>
+            <CompareProvider>
+              <UIProvider>
+                <AppContent />
+              </UIProvider>
+            </CompareProvider>
+          </PropertyProvider>
+        </SettingsProvider>
       </AuthProvider>
     </RouterProvider>
   );

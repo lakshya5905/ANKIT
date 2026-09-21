@@ -35,23 +35,23 @@ service cloud.firestore {
              data.email is string && data.email.size() <= 150;
     }
 
-    // Properties: Public can read listings; Valid property listings can be created/managed
+    // Properties: Public can read listings; Only authenticated admin can create, update, delete
     match /properties/{propertyId} {
       allow read: if true;
-      allow create, update: if isValidId(propertyId) && isValidProperty(request.resource.data);
-      allow delete: if isValidId(propertyId);
+      allow create, update: if isSignedIn() && isValidId(propertyId) && isValidProperty(request.resource.data);
+      allow delete: if isSignedIn() && isValidId(propertyId);
     }
 
-    // Enquiries: Public can submit; Leads can be viewed and managed
+    // Enquiries: Public can submit; Only authenticated admin can read, update, delete leads
     match /enquiries/{enquiryId} {
       allow create: if isValidId(enquiryId) && isValidEnquiry(request.resource.data);
-      allow read, update, delete: if isValidId(enquiryId);
+      allow read, update, delete: if isSignedIn() && isValidId(enquiryId);
     }
 
-    // Settings: Public can read business contact info; Valid settings can be saved
+    // Settings: Public can read business contact info; Only authenticated admin can save settings
     match /settings/{settingsId} {
       allow read: if true;
-      allow write: if isValidId(settingsId) && isValidSettings(request.resource.data);
+      allow write: if isSignedIn() && isValidId(settingsId) && isValidSettings(request.resource.data);
     }
   }
 }
